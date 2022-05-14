@@ -1,0 +1,1 @@
+export const AUTH_SIGNIN_USER = "AUTH_SIGNIN_USER";

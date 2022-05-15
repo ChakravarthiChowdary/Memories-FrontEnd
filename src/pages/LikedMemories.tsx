@@ -12,8 +12,13 @@ import { Memory } from "../types/types";
 
 const LikedMemories = () => {
   const dispatch: Dispatch<any> = useDispatch();
-  const { likedMemories, likedMemoryError, likedMemoryLoading } =
-    useAppSelector((state) => state.posts);
+  const {
+    likedMemories,
+    likedMemoryError,
+    likedMemoryLoading,
+    location,
+    searchText,
+  } = useAppSelector((state) => state.posts);
 
   useEffect(() => {
     dispatch(getLikedMemories(USER_ID, "LikedUsers"));
@@ -38,9 +43,23 @@ const LikedMemories = () => {
     return <Error message="Like posts to see it here." severity="info" />;
   }
 
+  let filteredMemories;
+
+  if (location === "/likedmemories") {
+    filteredMemories = likedMemories.filter(
+      (memory: Memory) =>
+        memory.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        memory.title.toLowerCase().includes(searchText.toLowerCase())
+    );
+  } else filteredMemories = likedMemories;
+
+  if (filteredMemories.length === 0) {
+    return <Error message="No posts found with search." severity="info" />;
+  }
+
   return (
     <Grid container spacing={2} rowSpacing={4} sx={{ p: 3 }}>
-      {likedMemories.map((memory: Memory) => (
+      {filteredMemories.map((memory: Memory) => (
         <MemoryCard memory={memory} key={memory._id} />
       ))}
     </Grid>

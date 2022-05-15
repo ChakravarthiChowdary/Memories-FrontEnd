@@ -31,6 +31,11 @@ export interface PostState {
   favMemories: Memory[];
   favMemoryLoading: boolean;
   favMemoryError: Error | null;
+  postMemoryLoading: boolean;
+  postMemoryError: Error | null;
+  postMemorySuccess: boolean;
+  location: string;
+  searchText: string;
 }
 
 export interface Error {

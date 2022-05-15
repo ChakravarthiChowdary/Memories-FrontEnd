@@ -3,6 +3,11 @@ import { styled } from "@mui/material/styles";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
 
 import { Avatar, Box, Button, Paper, TextField } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { Dispatch } from "redux";
+import { postMemory } from "../store/actions/postsActions";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { useAppSelector } from "../store/store";
 
 const Input = styled("input")({
   display: "none",
@@ -10,9 +15,21 @@ const Input = styled("input")({
 
 const PostMemoryForm = () => {
   const [fileNames, setFileNames] = useState<File[]>([]);
+  const [title, setTitle] = useState("");
+  const [titleTouched, setTitleTouched] = useState(false);
+  const [description, setDescription] = useState("");
+  const [descriptionTouched, setDescriptionTouched] = useState(false);
+  const dispatch: Dispatch<any> = useDispatch();
+  const { postMemoryLoading } = useAppSelector((state) => state.posts);
 
   const handleUploadClick = (event: any) => {
     setFileNames(Array.from(event.target.files));
+  };
+
+  const postButtonClickedHandler = () => {
+    if (title !== "" && description !== "") {
+      dispatch(postMemory(title, description));
+    }
   };
 
   return (
@@ -39,7 +56,19 @@ const PostMemoryForm = () => {
           <NoteAltIcon />
         </Avatar>
       </Box>
-      <TextField required label="Title" fullWidth size="small" sx={{ mb: 4 }} />
+      <TextField
+        required
+        label="Title"
+        fullWidth
+        size="small"
+        sx={{ mb: 4 }}
+        onChange={(event) => {
+          setTitleTouched(true);
+          setTitle(event.target.value);
+        }}
+        error={title === "" && titleTouched}
+        helperText={title === "" && titleTouched && "Title cannot be blank"}
+      />
       <TextField
         required
         label="Description"
@@ -48,6 +77,16 @@ const PostMemoryForm = () => {
         sx={{ mb: 4 }}
         multiline
         rows={4}
+        onChange={(event) => {
+          setDescriptionTouched(true);
+          setDescription(event.target.value);
+        }}
+        error={description === "" && descriptionTouched}
+        helperText={
+          description === "" &&
+          descriptionTouched &&
+          "Description cannot be blank"
+        }
       />
       <label htmlFor="contained-button-file">
         <Input
@@ -69,9 +108,15 @@ const PostMemoryForm = () => {
           <p>{el.name}</p>
         ))}
       </label>
-      <Button variant="contained" fullWidth>
+      <LoadingButton
+        color="primary"
+        onClick={postButtonClickedHandler}
+        loading={postMemoryLoading}
+        variant="contained"
+        fullWidth
+      >
         Post your memory
-      </Button>
+      </LoadingButton>
     </Paper>
   );
 };

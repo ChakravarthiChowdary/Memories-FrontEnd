@@ -16,12 +16,14 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import Fab from "@mui/material/Fab";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import useWindowSize from "../hooks/useWindowSize";
 import { Zoom } from "@mui/material";
+import { useAppDispatch } from "../store/store";
+import { SEARCH_POSTS } from "../store/actions/postsActions";
 
 interface Props {
   window?: () => Window;
@@ -106,9 +108,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function NavBar(props: any) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const [searchText, setSearchText] = React.useState("");
+  const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+  React.useEffect(() => {
+    setSearchText("");
+  }, [location.pathname]);
 
   const navigate = useNavigate();
   const size = useWindowSize();
@@ -133,6 +142,17 @@ export default function NavBar(props: any) {
   const handleMobileMenuClick = (path: string) => {
     navigate(path);
     handleMobileMenuClose();
+  };
+
+  const searchChangedHandler = (event: any) => {
+    dispatch({
+      type: SEARCH_POSTS,
+      payload: {
+        location: location.pathname,
+        searchText: event.target.value,
+      },
+    });
+    setSearchText(event.target.value);
   };
 
   const menuId = "primary-search-account-menu";
@@ -250,6 +270,8 @@ export default function NavBar(props: any) {
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
               sx={{ fontFamily: "poppins" }}
+              onChange={searchChangedHandler}
+              value={searchText}
             />
           </Search>
           <Box sx={{ flexGrow: 1 }} />

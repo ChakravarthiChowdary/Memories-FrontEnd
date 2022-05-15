@@ -13,9 +13,13 @@ import { Memory } from "../types/types";
 
 const Favourites = () => {
   const dispatch: Dispatch<any> = useDispatch();
-  const { favMemories, favMemoryError, favMemoryLoading } = useAppSelector(
-    (state) => state.posts
-  );
+  const {
+    favMemories,
+    favMemoryError,
+    favMemoryLoading,
+    location,
+    searchText,
+  } = useAppSelector((state) => state.posts);
 
   useEffect(() => {
     dispatch(getLikedMemories(USER_ID, "FavUsers"));
@@ -39,9 +43,24 @@ const Favourites = () => {
       <Error message="Make posts favourite to see it here." severity="info" />
     );
   }
+
+  let filteredMemories;
+
+  if (location === "/favourites") {
+    filteredMemories = favMemories.filter(
+      (memory: Memory) =>
+        memory.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        memory.title.toLowerCase().includes(searchText.toLowerCase())
+    );
+  } else filteredMemories = favMemories;
+
+  if (filteredMemories.length === 0) {
+    return <Error message="No posts found with search." severity="info" />;
+  }
+
   return (
     <Grid container spacing={2} rowSpacing={4} sx={{ p: 3 }}>
-      {favMemories.map((el: Memory) => (
+      {filteredMemories.map((el: Memory) => (
         <MemoryCard key={el._id} memory={el} />
       ))}
     </Grid>

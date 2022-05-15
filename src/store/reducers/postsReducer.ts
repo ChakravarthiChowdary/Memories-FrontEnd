@@ -1,6 +1,8 @@
 import { AnyAction } from "redux";
 import { PostState } from "../../types/types";
 import {
+  CLEAN_UP_POST_MEMORY_STATE,
+  CLEAN_UP_SEARCH_STATE,
   GET_ALL_MEMORIES_FAIL,
   GET_ALL_MEMORIES_START,
   GET_ALL_MEMORIES_SUCCESS,
@@ -13,6 +15,10 @@ import {
   GET_MEMORY_DETAIL_FAIL,
   GET_MEMORY_DETAIL_START,
   GET_MEMORY_DETAIL_SUCCESS,
+  POST_MEMORY_FAIL,
+  POST_MEMORY_START,
+  POST_MEMORY_SUCCESS,
+  SEARCH_POSTS,
 } from "../actions/postsActions";
 
 const initialState: PostState = {
@@ -28,6 +34,11 @@ const initialState: PostState = {
   favMemories: [],
   favMemoryError: null,
   favMemoryLoading: false,
+  postMemoryLoading: false,
+  postMemoryError: null,
+  postMemorySuccess: false,
+  location: "",
+  searchText: "",
 };
 
 export const postReducer = (state = initialState, action: AnyAction) => {
@@ -98,6 +109,48 @@ export const postReducer = (state = initialState, action: AnyAction) => {
         favMemoryLoading: false,
         favMemoryError: action.payload,
         favMemories: [],
+      };
+    case POST_MEMORY_START:
+      return {
+        ...state,
+        postMemoryLoading: true,
+        postMemoryError: null,
+      };
+    case POST_MEMORY_FAIL:
+      return {
+        ...state,
+        postMemoryLoading: false,
+        postMemoryError: action.payload,
+      };
+    case POST_MEMORY_SUCCESS:
+      const updatedMemories = state.memories;
+      updatedMemories.push(action.payload);
+      return {
+        ...state,
+        postMemoryLoading: false,
+        postMemoryError: null,
+        postMemorySuccess: true,
+        memories: updatedMemories,
+      };
+    case CLEAN_UP_POST_MEMORY_STATE:
+      return {
+        ...state,
+        postMemoryLoading: false,
+        postMemoryError: null,
+        postMemorySuccess: false,
+      };
+    case SEARCH_POSTS:
+      const { location, searchText } = action.payload;
+      return {
+        ...state,
+        location,
+        searchText,
+      };
+    case CLEAN_UP_SEARCH_STATE:
+      return {
+        ...state,
+        location: "",
+        searchText: "",
       };
     default:
       return state;

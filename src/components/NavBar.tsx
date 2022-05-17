@@ -155,6 +155,16 @@ export default function NavBar(props: any) {
     setSearchText(event.target.value);
   };
 
+  const myPostsClickedHandler = () => {
+    navigate("/myPosts");
+    handleMenuClose();
+  };
+
+  const myProfileClickedHandler = () => {
+    navigate("/myProfile");
+    handleMenuClose();
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -172,7 +182,8 @@ export default function NavBar(props: any) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={myPostsClickedHandler}>My Posts</MenuItem>
+      <MenuItem onClick={myProfileClickedHandler}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
     </Menu>
   );

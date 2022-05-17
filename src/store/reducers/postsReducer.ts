@@ -15,6 +15,9 @@ import {
   GET_MEMORY_DETAIL_FAIL,
   GET_MEMORY_DETAIL_START,
   GET_MEMORY_DETAIL_SUCCESS,
+  GET_MY_POSTS_FAIL,
+  GET_MY_POSTS_START,
+  GET_MY_POSTS_SUCCESS,
   POST_MEMORY_FAIL,
   POST_MEMORY_START,
   POST_MEMORY_SUCCESS,
@@ -39,6 +42,9 @@ const initialState: PostState = {
   postMemorySuccess: false,
   location: "",
   searchText: "",
+  myPosts: [],
+  myPostsLoading: false,
+  myPostsError: null,
 };
 
 export const postReducer = (state = initialState, action: AnyAction) => {
@@ -151,6 +157,25 @@ export const postReducer = (state = initialState, action: AnyAction) => {
         ...state,
         location: "",
         searchText: "",
+      };
+    case GET_MY_POSTS_START:
+      return {
+        ...state,
+        myPostsLoading: true,
+        myPostsError: null,
+      };
+    case GET_MY_POSTS_SUCCESS:
+      return {
+        ...state,
+        myPostsLoading: false,
+        myPostsError: null,
+        myPosts: action.payload,
+      };
+    case GET_MY_POSTS_FAIL:
+      return {
+        ...state,
+        myPostsLoading: false,
+        myPostsError: action.payload,
       };
     default:
       return state;

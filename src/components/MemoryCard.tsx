@@ -94,6 +94,8 @@ const MemoryCard: React.FC<IMemoryProps> = ({ memory }) => {
           }
           title={title}
           subheader={convertedDate}
+          titleTypographyProps={{ fontFamily: "poppins" }}
+          subheaderTypographyProps={{ fontFamily: "poppins" }}
         />
         <CardMedia
           component="img"
@@ -103,7 +105,11 @@ const MemoryCard: React.FC<IMemoryProps> = ({ memory }) => {
         ></CardMedia>
 
         <CardContent>
-          <Typography variant="body2" color="text.secondary">
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ fontFamily: "poppins" }}
+          >
             {description}
           </Typography>
         </CardContent>

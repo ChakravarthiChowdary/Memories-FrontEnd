@@ -29,6 +29,10 @@ export const CLEAN_UP_POST_MEMORY_STATE = "CLEAN_UP_POST_MEMORY_STATE";
 export const SEARCH_POSTS = "SEARCH_POSTS";
 export const CLEAN_UP_SEARCH_STATE = "CLEAN_UP_SEARCH_STATE";
 
+export const GET_MY_POSTS_START = "GET_MY_POSTS_START";
+export const GET_MY_POSTS_SUCCESS = "GET_MY_POSTS_SUCCESS";
+export const GET_MY_POSTS_FAIL = "GET_MY_POSTS_FAIL";
+
 const getRequestParams = {
   method: "GET",
   headers: {
@@ -245,6 +249,44 @@ export const postMemory = (
       dispatch({ type: POST_MEMORY_SUCCESS, payload: result });
     } catch (error) {
       dispatch({ type: POST_MEMORY_FAIL, payload: error });
+    }
+  };
+};
+
+export const getMyPosts = (): ThunkAction<
+  void,
+  RootState,
+  unknown,
+  AnyAction
+> => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: GET_MY_POSTS_START });
+
+      const response = await fetch(
+        `http://localhost:5000/app/v1/posts/getMyPosts/${USER_ID}`,
+        getRequestParams
+      );
+
+      const result = await response.json();
+
+      if (result.errors || result.error) {
+        dispatch({
+          type: GET_MY_POSTS_FAIL,
+          payload: result.errors
+            ? {
+                message: result.errors[0].msg,
+                statusCode: 500,
+                requestStatus: "Fail",
+              }
+            : result.error,
+        });
+        return;
+      }
+
+      dispatch({ type: GET_MY_POSTS_SUCCESS, payload: result });
+    } catch (error) {
+      dispatch({ type: GET_MY_POSTS_FAIL, payload: error });
     }
   };
 };

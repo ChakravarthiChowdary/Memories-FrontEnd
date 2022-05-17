@@ -12,6 +12,8 @@ import useWindowSize from "./hooks/useWindowSize";
 import PostNewMemory from "./pages/PostNewMemory";
 import LikedMemories from "./pages/LikedMemories";
 import PostDetails from "./pages/PostDetails";
+import MyPosts from "./pages/MyPosts";
+import Profile from "./pages/Profile";
 
 const theme = createTheme({
   palette: {
@@ -36,7 +38,9 @@ function App() {
           <Route path="/favourites" element={<Favourites />} />
           <Route path="/likedmemories" element={<LikedMemories />} />
           <Route path="/post/:postId" element={<PostDetails />} />
+          <Route path="/myPosts" element={<MyPosts />} />
           <Route path="*" element={<PageNotFound />} />
+          <Route path="myProfile" element={<Profile />} />
           {size.width && size.width <= 900 && (
             <Route path="/addnewmemory" element={<PostNewMemory />} />
           )}

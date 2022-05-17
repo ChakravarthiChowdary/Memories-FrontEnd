@@ -14,8 +14,11 @@ export interface Memory {
 
 export interface AuthState {
   loading: boolean;
-  user: null;
+  user: User | null;
   error: null;
+  updateProfileLoading: boolean;
+  updateProfileError: Error | null;
+  updateProfileSuccess: boolean;
 }
 
 export interface PostState {
@@ -36,10 +39,21 @@ export interface PostState {
   postMemorySuccess: boolean;
   location: string;
   searchText: string;
+  myPosts: Memory[];
+  myPostsLoading: boolean;
+  myPostsError: Error | null;
 }
 
 export interface Error {
   message: string;
   statusCode: number;
   requestStatus: "Fail";
+}
+
+export interface User {
+  username: string;
+  id: string;
+  email: string;
+  photoUrl: string;
+  token: string;
 }

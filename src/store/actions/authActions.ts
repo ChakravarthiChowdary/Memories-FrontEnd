@@ -11,6 +11,8 @@ export const AUTH_SIGNIN_START = "AUTH_SIGNIN_START";
 export const AUTH_SIGNIN_SUCCESS = "AUTH_SIGNIN_SUCCESS";
 export const AUTH_SIGNIN_FAIL = "AUTH_SIGNIN_FAIL";
 
+export const AUTH_SIGNOUT = "AUTH_SIGNOUT";
+
 export const AUTH_CLEAN_UPDATE_PROFILE_STATE =
   "AUTH_CLEAN_UPDATE_PROFILE_STATE";
 
@@ -21,8 +23,9 @@ export const updateProfile = (userDetails: {
   confirmPassword: string;
   id: string;
 }): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
+      const user = getState().auth.user;
       dispatch({ type: AUTH_UPDATE_PROFILE_START });
       const response = await fetch(
         "http://localhost:5000/app/v1/auth/updateProfile",
@@ -30,7 +33,7 @@ export const updateProfile = (userDetails: {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${JWT}`,
+            Authorization: `Bearer ${user.token}`,
           },
           body: JSON.stringify(userDetails),
         }
@@ -86,7 +89,8 @@ export const signInUser = (credentials: {
         });
         return;
       }
-      dispatch({ type: AUTH_SIGNIN_SUCCESS, payload: result });
+      console.log(result);
+      dispatch({ type: AUTH_SIGNIN_SUCCESS, payload: result.userInfo });
     } catch (error) {
       dispatch({ type: AUTH_SIGNIN_FAIL, payload: error });
     }

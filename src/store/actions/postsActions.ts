@@ -1,6 +1,5 @@
 import { AnyAction } from "redux";
 import { ThunkAction } from "redux-thunk";
-import { JWT, USER_ID } from "../../mock/data";
 import { RootState } from "../store";
 
 export const GET_ALL_MEMORIES_START = "GET_ALL_MEMORIES_START";
@@ -33,21 +32,21 @@ export const GET_MY_POSTS_START = "GET_MY_POSTS_START";
 export const GET_MY_POSTS_SUCCESS = "GET_MY_POSTS_SUCCESS";
 export const GET_MY_POSTS_FAIL = "GET_MY_POSTS_FAIL";
 
-const getRequestParams = {
+const getRequestParams = (token: string) => ({
   method: "GET",
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${JWT}`,
+    Authorization: `Bearer ${token}`,
   },
-};
+});
 
-const postRequestParams = {
+const postRequestParams = (token: string) => ({
   method: "POST",
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${JWT}`,
+    Authorization: `Bearer ${token}`,
   },
-};
+});
 
 export const getAllMemories = (): ThunkAction<
   void,
@@ -55,13 +54,14 @@ export const getAllMemories = (): ThunkAction<
   unknown,
   AnyAction
 > => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
+      const user = getState().auth.user;
       dispatch({ type: GET_ALL_MEMORIES_START });
 
       const response = await fetch(
         "http://localhost:5000/app/v1/posts",
-        getRequestParams
+        getRequestParams(user.token)
       );
       const result = await response.json();
 
@@ -79,8 +79,8 @@ export const getAllMemories = (): ThunkAction<
         return;
       }
 
-      dispatch(getLikedMemories(USER_ID, "LikedUsers", result));
-      dispatch(getLikedMemories(USER_ID, "FavUsers", result));
+      dispatch(getLikedMemories(user.id, "LikedUsers", result));
+      dispatch(getLikedMemories(user.id, "FavUsers", result));
     } catch (error) {
       dispatch({ type: GET_ALL_MEMORIES_FAIL, payload: error });
     }
@@ -90,13 +90,14 @@ export const getAllMemories = (): ThunkAction<
 export const getMemoryDetails = (
   id: string
 ): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
+      const user = getState().auth.user;
       dispatch({ type: GET_MEMORY_DETAIL_START });
 
       const response = await fetch(
         `http://localhost:5000/app/v1/posts/${id}`,
-        getRequestParams
+        getRequestParams(user.token)
       );
 
       const result = await response.json();
@@ -126,10 +127,12 @@ export const likeOrDislikeMemory = (
   postId: string,
   likedOrFav: "LikedUsers" | "FavUsers"
 ): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
+      const user = getState().auth.user;
+
       const params = {
-        ...postRequestParams,
+        ...postRequestParams(user.token),
         body: JSON.stringify({ postId: postId, likedOrFav: likedOrFav }),
       };
 
@@ -153,7 +156,7 @@ export const likeOrDislikeMemory = (
         return;
       }
 
-      dispatch(getLikedMemories(USER_ID, likedOrFav));
+      dispatch(getLikedMemories(user.id, likedOrFav));
     } catch (error) {
       dispatch({ type: LIKE_MEMORY_FAIL, payload: error });
     }
@@ -165,7 +168,8 @@ export const getLikedMemories = (
   likedOrFav: "LikedUsers" | "FavUsers",
   allMemories?: any
 ): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const user = getState().auth.user;
     const getLiked = likedOrFav === "LikedUsers";
 
     try {
@@ -177,7 +181,7 @@ export const getLikedMemories = (
 
       const response = await fetch(
         `http://localhost:5000/app/v1/posts/getLikedOrFavPostsOfUser/${likedOrFav}/${userId}`,
-        getRequestParams
+        getRequestParams(user.token)
       );
       const result = await response.json();
 
@@ -211,11 +215,13 @@ export const postMemory = (
   title: string,
   description: string
 ): ThunkAction<void, RootState, unknown, AnyAction> => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
+      const user = getState().auth.user;
+
       dispatch({ type: POST_MEMORY_START });
       const params = {
-        ...postRequestParams,
+        ...postRequestParams(user.token),
         body: JSON.stringify({
           title,
           description,
@@ -259,13 +265,15 @@ export const getMyPosts = (): ThunkAction<
   unknown,
   AnyAction
 > => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
+      const user = getState().auth.user;
+
       dispatch({ type: GET_MY_POSTS_START });
 
       const response = await fetch(
-        `http://localhost:5000/app/v1/posts/getMyPosts/${USER_ID}`,
-        getRequestParams
+        `http://localhost:5000/app/v1/posts/getMyPosts/${user.id}`,
+        getRequestParams(user.token)
       );
 
       const result = await response.json();

@@ -7,7 +7,9 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import Badge from "@mui/material/Badge";
+import LockOpenIcon from "@mui/icons-material/LockOpen";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
+import HowToRegIcon from "@mui/icons-material/HowToReg";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
@@ -22,8 +24,9 @@ import Fab from "@mui/material/Fab";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import useWindowSize from "../hooks/useWindowSize";
 import { Zoom } from "@mui/material";
-import { useAppDispatch } from "../store/store";
+import { useAppDispatch, useAppSelector } from "../store/store";
 import { SEARCH_POSTS } from "../store/actions/postsActions";
+import { AUTH_SIGNOUT } from "../store/actions/authActions";
 
 interface Props {
   window?: () => Window;
@@ -111,6 +114,7 @@ export default function NavBar(props: any) {
   const [searchText, setSearchText] = React.useState("");
   const dispatch = useAppDispatch();
   const location = useLocation();
+  const user = useAppSelector((state) => state.auth.user);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -184,7 +188,14 @@ export default function NavBar(props: any) {
     >
       <MenuItem onClick={myPostsClickedHandler}>My Posts</MenuItem>
       <MenuItem onClick={myProfileClickedHandler}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
+      <MenuItem
+        onClick={() => {
+          handleMenuClose();
+          dispatch({ type: AUTH_SIGNOUT });
+        }}
+      >
+        Sign Out
+      </MenuItem>
     </Menu>
   );
 
@@ -205,54 +216,81 @@ export default function NavBar(props: any) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={() => handleMobileMenuClick("/")}>
-        <IconButton size="large" color="inherit">
-          <HomeIcon />
-        </IconButton>
-        <p>Home</p>
-      </MenuItem>
-      {size.width && size.width <= 900 && (
-        <MenuItem onClick={() => handleMobileMenuClick("/addnewmemory")}>
-          <IconButton size="large" color="inherit">
-            <Badge color="error">
-              <NoteAltIcon />
-            </Badge>
-          </IconButton>
-          <p>Post Memory</p>
-        </MenuItem>
+      {user ? (
+        <>
+          {" "}
+          <MenuItem onClick={() => handleMobileMenuClick("/")}>
+            <IconButton size="large" color="inherit">
+              <HomeIcon />
+            </IconButton>
+            <p>Home</p>
+          </MenuItem>
+          {size.width && size.width <= 900 && (
+            <MenuItem onClick={() => handleMobileMenuClick("/addnewmemory")}>
+              <IconButton size="large" color="inherit">
+                <Badge color="error">
+                  <NoteAltIcon />
+                </Badge>
+              </IconButton>
+              <p>Post Memory</p>
+            </MenuItem>
+          )}
+          <MenuItem onClick={() => handleMobileMenuClick("/likedmemories")}>
+            <IconButton
+              size="large"
+              aria-label="show 4 new mails"
+              color="inherit"
+            >
+              <Badge color="error">
+                <ThumbUpIcon />
+              </Badge>
+            </IconButton>
+            <p>Liked Memories</p>
+          </MenuItem>
+          <MenuItem onClick={() => handleMobileMenuClick("/favourites")}>
+            <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge color="error">
+                <FavoriteIcon />
+              </Badge>
+            </IconButton>
+            <p>Favourites</p>
+          </MenuItem>
+          <MenuItem onClick={handleProfileMenuOpen}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="primary-search-account-menu"
+              aria-haspopup="true"
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <p>Profile</p>
+          </MenuItem>
+        </>
+      ) : (
+        <>
+          {" "}
+          <MenuItem onClick={() => handleMobileMenuClick("/")}>
+            <IconButton size="large" color="inherit">
+              <Badge color="error">
+                <LockOpenIcon />
+              </Badge>
+            </IconButton>
+            <p>Sign In</p>
+          </MenuItem>
+          <MenuItem onClick={() => handleMobileMenuClick("/signup")}>
+            <IconButton size="large" color="inherit">
+              <HowToRegIcon />
+            </IconButton>
+            <p>Sign Up</p>
+          </MenuItem>
+        </>
       )}
-      <MenuItem onClick={() => handleMobileMenuClick("/likedmemories")}>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge color="error">
-            <ThumbUpIcon />
-          </Badge>
-        </IconButton>
-        <p>Liked Memories</p>
-      </MenuItem>
-      <MenuItem onClick={() => handleMobileMenuClick("/favourites")}>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge color="error">
-            <FavoriteIcon />
-          </Badge>
-        </IconButton>
-        <p>Favourites</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
     </Menu>
   );
 
@@ -273,58 +311,81 @@ export default function NavBar(props: any) {
             />{" "}
             Memories
           </Typography>
-          <Search sx={{ flexGrow: 1, fontFamily: "poppins" }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-              sx={{ fontFamily: "poppins" }}
-              onChange={searchChangedHandler}
-              value={searchText}
-            />
-          </Search>
+          {user && (
+            <Search sx={{ flexGrow: 1, fontFamily: "poppins" }}>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                sx={{ fontFamily: "poppins" }}
+                onChange={searchChangedHandler}
+                value={searchText}
+              />
+            </Search>
+          )}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={() => navigate("/", { replace: true })}
-            >
-              <Badge color="error">
-                <HomeIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={() => navigate("/likedmemories")}
-            >
-              <Badge color="error">
-                <ThumbUpIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              color="inherit"
-              onClick={() => navigate("/favourites")}
-            >
-              <Badge color="error">
-                <FavoriteIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <AccountCircle />
-            </IconButton>
+            {user ? (
+              <>
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  onClick={() => navigate("/", { replace: true })}
+                >
+                  <Badge color="error">
+                    <HomeIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  onClick={() => navigate("/likedmemories")}
+                >
+                  <Badge color="error">
+                    <ThumbUpIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  onClick={() => navigate("/favourites")}
+                >
+                  <Badge color="error">
+                    <FavoriteIcon />
+                  </Badge>
+                </IconButton>
+                <IconButton
+                  size="large"
+                  edge="end"
+                  aria-label="account of current user"
+                  aria-controls={menuId}
+                  aria-haspopup="true"
+                  onClick={handleProfileMenuOpen}
+                  color="inherit"
+                >
+                  <AccountCircle />
+                </IconButton>
+              </>
+            ) : (
+              <>
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  onClick={() => navigate("/", { replace: true })}
+                >
+                  <LockOpenIcon />
+                </IconButton>
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  onClick={() => navigate("/signup", { replace: true })}
+                >
+                  <HowToRegIcon />
+                </IconButton>
+              </>
+            )}
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton

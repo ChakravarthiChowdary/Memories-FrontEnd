@@ -2,7 +2,6 @@ import React, { Dispatch, useEffect } from "react";
 import { Grid } from "@mui/material";
 import { useDispatch } from "react-redux";
 
-import { memories, USER_ID } from "../mock/data";
 import MemoryCard from "../components/MemoryCard";
 import { getLikedMemories } from "../store/actions/postsActions";
 import { useAppSelector } from "../store/store";
@@ -19,9 +18,10 @@ const LikedMemories = () => {
     location,
     searchText,
   } = useAppSelector((state) => state.posts);
+  const user = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(getLikedMemories(USER_ID, "LikedUsers"));
+    dispatch(getLikedMemories(user.id, "LikedUsers"));
   }, []);
 
   if (likedMemoryLoading) {
@@ -33,7 +33,7 @@ const LikedMemories = () => {
       <Error
         message={likedMemoryError.message}
         retryHandleClick={() =>
-          dispatch(getLikedMemories(USER_ID, "LikedUsers"))
+          dispatch(getLikedMemories(user.id, "LikedUsers"))
         }
       />
     );

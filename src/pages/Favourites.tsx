@@ -6,7 +6,6 @@ import Error from "../components/Error";
 import Loading from "../components/Loading";
 
 import MemoryCard from "../components/MemoryCard";
-import { USER_ID } from "../mock/data";
 import { getLikedMemories } from "../store/actions/postsActions";
 import { useAppSelector } from "../store/store";
 import { Memory } from "../types/types";
@@ -20,9 +19,10 @@ const Favourites = () => {
     location,
     searchText,
   } = useAppSelector((state) => state.posts);
+  const user = useAppSelector((state) => state.auth.user);
 
   useEffect(() => {
-    dispatch(getLikedMemories(USER_ID, "FavUsers"));
+    dispatch(getLikedMemories(user.id, "FavUsers"));
   }, []);
 
   if (favMemoryLoading) {
@@ -33,7 +33,7 @@ const Favourites = () => {
     return (
       <Error
         message={favMemoryError.message}
-        retryHandleClick={() => dispatch(getLikedMemories(USER_ID, "FavUsers"))}
+        retryHandleClick={() => dispatch(getLikedMemories(user.id, "FavUsers"))}
       />
     );
   }

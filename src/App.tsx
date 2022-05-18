@@ -14,6 +14,8 @@ import LikedMemories from "./pages/LikedMemories";
 import PostDetails from "./pages/PostDetails";
 import MyPosts from "./pages/MyPosts";
 import Profile from "./pages/Profile";
+import { useAppSelector } from "./store/store";
+import SignIn from "./pages/SignIn";
 
 const theme = createTheme({
   palette: {
@@ -28,22 +30,31 @@ const theme = createTheme({
 
 function App() {
   const size = useWindowSize();
+  const user = useAppSelector((state) => state.auth.user);
 
   return (
     <ThemeProvider theme={theme}>
       <>
         <NavBar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/favourites" element={<Favourites />} />
-          <Route path="/likedmemories" element={<LikedMemories />} />
-          <Route path="/post/:postId" element={<PostDetails />} />
-          <Route path="/myPosts" element={<MyPosts />} />
-          <Route path="*" element={<PageNotFound />} />
-          <Route path="myProfile" element={<Profile />} />
-          {size.width && size.width <= 900 && (
-            <Route path="/addnewmemory" element={<PostNewMemory />} />
+          {user ? (
+            <>
+              <Route path="/" element={<Home />} />
+              <Route path="/favourites" element={<Favourites />} />
+              <Route path="/likedmemories" element={<LikedMemories />} />
+              <Route path="/post/:postId" element={<PostDetails />} />
+              <Route path="/myPosts" element={<MyPosts />} />
+              <Route path="myProfile" element={<Profile />} />
+              {size.width && size.width <= 900 && (
+                <Route path="/addnewmemory" element={<PostNewMemory />} />
+              )}{" "}
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<SignIn />} />
+            </>
           )}
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </>
     </ThemeProvider>

@@ -24,6 +24,10 @@ export const AUTH_SIGNUP_START = "AUTH_SIGNUP_START";
 export const AUTH_SIGNUP_SUCCESS = "AUTH_SIGNUP_SUCCESS";
 export const AUTH_SIGNUP_FAIL = "AUTH_SIGNUP_FAIL";
 
+export const AUTH_FORGOTPASSWORD_START = "AUTH_FORGOTPASSWORD_START";
+export const AUTH_FORGOTPASSWORD_SUCCESS = "AUTH_FORGOTPASSWORD_SUCCESS";
+export const AUTH_FORGOTPASSWORD_FAIL = "AUTH_FORGOTPASSWORD_FAIL";
+
 export const CLEAN_UP_AUTH_STATE = "CLEAN_UP_AUTH_STATE";
 
 export const updateProfile = (userDetails: {
@@ -174,6 +178,48 @@ export const signUp = (userInfo: {
       dispatch({ type: AUTH_SIGNUP_SUCCESS, payload: result });
     } catch (error) {
       dispatch({ type: AUTH_SIGNUP_FAIL, payload: error });
+    }
+  };
+};
+
+export const forgotPassword = (userInfo: {
+  email: string;
+  oldPassword: string;
+  confirmPassword: string;
+  newPassword: string;
+}): ThunkAction<void, RootState, unknown, AnyAction> => {
+  return async (dispatch) => {
+    try {
+      dispatch({ type: AUTH_FORGOTPASSWORD_START });
+
+      const response = await fetch(
+        "http://localhost:5000/app/v1/auth/forgotpassword",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userInfo),
+        }
+      );
+      const result = await response.json();
+      if (result.errors || result.error) {
+        dispatch({
+          type: AUTH_FORGOTPASSWORD_FAIL,
+          payload: result.errors
+            ? {
+                message: result.errors[0].msg,
+                statusCode: 500,
+                requestStatus: "Fail",
+              }
+            : result.error,
+        });
+        return;
+      }
+
+      dispatch({ type: AUTH_FORGOTPASSWORD_SUCCESS, payload: result });
+    } catch (error) {
+      dispatch({ type: AUTH_FORGOTPASSWORD_FAIL, payload: error });
     }
   };
 };

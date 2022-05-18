@@ -6,6 +6,9 @@ import {
   AUTH_AUTOLOGIN_START,
   AUTH_AUTOLOGIN_SUCCESS,
   AUTH_CLEAN_UPDATE_PROFILE_STATE,
+  AUTH_FORGOTPASSWORD_FAIL,
+  AUTH_FORGOTPASSWORD_START,
+  AUTH_FORGOTPASSWORD_SUCCESS,
   AUTH_SIGNIN_FAIL,
   AUTH_SIGNIN_START,
   AUTH_SIGNIN_SUCCESS,
@@ -28,6 +31,7 @@ const initialState: AuthState = {
   updateProfileSuccess: false,
   autoLoginLoading: false,
   signUpSuccess: false,
+  passwordUpdateSuccess: false,
 };
 
 export const authReducer = (state = initialState, action: AnyAction) => {
@@ -116,6 +120,26 @@ export const authReducer = (state = initialState, action: AnyAction) => {
         loading: false,
         error: action.payload,
         signUpSuccess: false,
+      };
+    case AUTH_FORGOTPASSWORD_START:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    case AUTH_FORGOTPASSWORD_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        passwordUpdateSuccess: true,
+        error: null,
+      };
+    case AUTH_FORGOTPASSWORD_FAIL:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+        passwordUpdateSuccess: false,
       };
     case CLEAN_UP_AUTH_STATE:
       return initialState;

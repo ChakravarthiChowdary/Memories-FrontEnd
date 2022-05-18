@@ -13,7 +13,11 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link as RouterLink } from "react-router-dom";
 import { useAppSelector } from "../store/store";
 import { useDispatch } from "react-redux";
-import { signInUser } from "../store/actions/authActions";
+import {
+  CLEAN_UP_AUTH_STATE,
+  forgotPassword,
+  signInUser,
+} from "../store/actions/authActions";
 import { LoadingButton } from "@mui/lab";
 import Loading from "../components/Loading";
 
@@ -49,10 +53,17 @@ export default function ForgotPassword() {
   const [newPassword, setNewPassword] = React.useState("");
   const [confirmNewPassword, setConfirmNewPassword] = React.useState("");
 
-  const { loading, error, autoLoginLoading } = useAppSelector(
-    (state) => state.auth
-  );
+  const { loading, error, autoLoginLoading, passwordUpdateSuccess } =
+    useAppSelector((state) => state.auth);
   const dispatch: React.Dispatch<any> = useDispatch();
+
+  React.useEffect(() => {
+    dispatch({ type: CLEAN_UP_AUTH_STATE });
+
+    return () => {
+      dispatch({ type: CLEAN_UP_AUTH_STATE });
+    };
+  }, []);
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
@@ -66,6 +77,15 @@ export default function ForgotPassword() {
       setFormError(true);
       return;
     }
+
+    dispatch(
+      forgotPassword({
+        email,
+        oldPassword,
+        newPassword,
+        confirmPassword: confirmNewPassword,
+      })
+    );
   };
 
   if (autoLoginLoading) {
@@ -160,9 +180,13 @@ export default function ForgotPassword() {
               }}
               error={confirmNewPasswordTouched && confirmNewPassword === ""}
             />
-            {(error || formError) && (
-              <Alert severity="error">
-                {formError ? "All fields are mandatory." : error.message}
+            {(error || formError || passwordUpdateSuccess) && (
+              <Alert severity={passwordUpdateSuccess ? "success" : "error"}>
+                {passwordUpdateSuccess
+                  ? "Password update successful. Login now."
+                  : formError
+                  ? "All fields are mandatory."
+                  : error.message}
               </Alert>
             )}
             <LoadingButton

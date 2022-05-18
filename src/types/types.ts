@@ -21,6 +21,7 @@ export interface AuthState {
   updateProfileSuccess: boolean;
   autoLoginLoading: boolean;
   signUpSuccess: boolean;
+  passwordUpdateSuccess: boolean;
 }
 
 export interface PostState {

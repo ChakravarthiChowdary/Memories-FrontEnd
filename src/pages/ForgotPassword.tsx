@@ -37,12 +37,18 @@ function Copyright(props: any) {
 
 const theme = createTheme();
 
-export default function SignIn() {
+export default function ForgotPassword() {
   const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [oldPassword, setOldPassword] = React.useState("");
   const [formError, setFormError] = React.useState(false);
   const [emailTouched, setEmailTouched] = React.useState(false);
-  const [passwordTouched, setPasswordTouched] = React.useState(false);
+  const [oldPasswordTouched, setOldPasswordTouched] = React.useState(false);
+  const [newPasswordTouched, setNewPasswordTouched] = React.useState(false);
+  const [confirmNewPasswordTouched, setConfirmNewPasswordTouched] =
+    React.useState(false);
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = React.useState("");
+
   const { loading, error, autoLoginLoading } = useAppSelector(
     (state) => state.auth
   );
@@ -51,11 +57,15 @@ export default function SignIn() {
   const handleSubmit = (event: any) => {
     event.preventDefault();
     // const data = new FormData(event.currentTarget);
-    if (email === "" || password === "") {
+    if (
+      email === "" ||
+      oldPassword === "" ||
+      newPassword === "" ||
+      confirmNewPassword === ""
+    ) {
       setFormError(true);
       return;
     }
-    dispatch(signInUser({ email, password }));
   };
 
   if (autoLoginLoading) {
@@ -78,7 +88,7 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Forgot Password
           </Typography>
           <Box
             component="form"
@@ -107,17 +117,48 @@ export default function SignIn() {
               margin="normal"
               required
               fullWidth
-              name="password"
-              label="Password"
+              name="oldpassword"
+              label="Old Password"
               type="password"
-              id="password"
+              id="oldpassword"
+              onChange={(e) => {
+                setFormError(false);
+                setOldPasswordTouched(true);
+                setOldPassword(e.target.value);
+              }}
+              error={oldPasswordTouched && oldPassword === ""}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="newpassword"
+              label="New Password"
+              type="password"
+              id="newpassword"
               autoComplete="current-password"
               onChange={(e) => {
                 setFormError(false);
-                setPasswordTouched(true);
-                setPassword(e.target.value);
+                setNewPasswordTouched(true);
+                setNewPassword(e.target.value);
               }}
-              error={passwordTouched && password === ""}
+              error={newPasswordTouched && newPassword === ""}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="confirmnewpassword"
+              label="Confirm New Password"
+              type="password"
+              id="confirmnewpassword"
+              autoComplete="current-password"
+              onChange={(e) => {
+                setFormError(false);
+                setConfirmNewPasswordTouched(true);
+                setConfirmNewPassword(e.target.value);
+              }}
+              error={confirmNewPasswordTouched && confirmNewPassword === ""}
             />
             {(error || formError) && (
               <Alert severity="error">
@@ -132,20 +173,13 @@ export default function SignIn() {
               fullWidth
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Change Password
             </LoadingButton>
             <Grid container>
-              <Grid item xs>
-                <RouterLink to="/forgotpassword">
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
-                </RouterLink>
-              </Grid>
               <Grid item>
-                <RouterLink to="/signup">
+                <RouterLink to="/">
                   <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
+                    {"Remember password ? Sign in"}
                   </Link>
                 </RouterLink>
               </Grid>

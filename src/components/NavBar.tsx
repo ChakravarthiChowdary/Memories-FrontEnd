@@ -190,6 +190,7 @@ export default function NavBar(props: any) {
       <MenuItem onClick={myProfileClickedHandler}>Profile</MenuItem>
       <MenuItem
         onClick={() => {
+          navigate("/", { replace: true });
           handleMenuClose();
           dispatch({ type: AUTH_SIGNOUT });
         }}

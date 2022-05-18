@@ -19,6 +19,8 @@ export interface AuthState {
   updateProfileLoading: boolean;
   updateProfileError: Error | null;
   updateProfileSuccess: boolean;
+  autoLoginLoading: boolean;
+  signUpSuccess: boolean;
 }
 
 export interface PostState {
@@ -56,4 +58,5 @@ export interface User {
   email: string;
   photoUrl: string;
   token: string;
+  expiresIn: string;
 }

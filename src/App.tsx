@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { green, purple } from "@mui/material/colors";
 import { Route, Routes } from "react-router";
@@ -16,6 +16,10 @@ import MyPosts from "./pages/MyPosts";
 import Profile from "./pages/Profile";
 import { useAppSelector } from "./store/store";
 import SignIn from "./pages/SignIn";
+import { useDispatch } from "react-redux";
+import { autoLogin } from "./store/actions/authActions";
+import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const theme = createTheme({
   palette: {
@@ -31,6 +35,11 @@ const theme = createTheme({
 function App() {
   const size = useWindowSize();
   const user = useAppSelector((state) => state.auth.user);
+  const dispatch: Dispatch<any> = useDispatch();
+
+  useEffect(() => {
+    dispatch(autoLogin());
+  }, [dispatch]);
 
   return (
     <ThemeProvider theme={theme}>
@@ -52,6 +61,8 @@ function App() {
           ) : (
             <>
               <Route path="/" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgotpassword" element={<ForgotPassword />} />
             </>
           )}
           <Route path="*" element={<PageNotFound />} />

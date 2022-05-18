@@ -11,13 +11,13 @@ It is a Full Stack MERN APP.
 
 ## Demo
 
-![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/tree/master/images/app1.PNG)
+![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/blob/master/images/app1.PNG)
 
-![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/tree/master/images/app2.PNG)
+![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/blob/master/images/app2.PNG)
 
-![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/tree/master/images/app3.PNG)
+![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/blob/master/images/app3.PNG)
 
-![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/tree/master/images/app4.PNG)
+![alt text](https://github.com/ChakravarthiChowdary/Memories-FrontEnd/blob/master/images/app4.PNG)
 
 ## Run it locally
 
